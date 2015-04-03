@@ -76,8 +76,8 @@ def sol_CSP_bin_rec(problemaCSP, asignacion):
     @param problemaCSP: Un problema tipo CSP binario
     @param asignacion: Un diccionario con la aignación
 
-    @return: False si no hay asignación, True si hay asignación. La función modifica la variable mutable 
-             `asignacion` 
+    @return: False si no hay asignación, True si hay asignación. La función modifica la variable mutable
+             `asignacion`
 
     """
     # Checa si la asignación es completa
@@ -121,7 +121,7 @@ def ordena_valores(problemaCSP, asignacion, variable):
     Esta heurística es lenta pero suele dar muy buenos resultados, evitando una gran cantidad de backtrackings.
 
     """
-    def num_conflictos(valor):    
+    def num_conflictos(valor):
         conflictos = 0
         for otra_variable in problemaCSP.vecinos[variable]:
             if otra_variable not in asignacion:
@@ -129,8 +129,8 @@ def ordena_valores(problemaCSP, asignacion, variable):
                     if not problemaCSP.restriccion_binaria((variable, valor), (otra_variable, otro_valor)):
                         conflictos += 1
         return conflictos
-        
-    return sorted(problemaCSP.dominio[variable], 
+
+    return sorted(problemaCSP.dominio[variable],
                   key=lambda v: num_conflictos(v))
 
 
@@ -143,7 +143,7 @@ def consistencia(problemaCSP, asignacion, variable, valor):
     if len(problemaCSP.dominio[variable]) == 0:
         return None
     for vecino, val_vecino in asignacion.iteritems():
-        if (vecino in problemaCSP.vecinos[variable] and 
+        if (vecino in problemaCSP.vecinos[variable] and
             not problemaCSP.restriccion_binaria((variable, valor), (vecino, val_vecino))):
             return None
 
@@ -164,8 +164,8 @@ def consistencia(problemaCSP, asignacion, variable, valor):
                 return None
 
     # 2-consistencia (reducción del dominio por arcos)
-    cola = [(xi, xj) for xi in problemaCSP.vecinos[variable] 
-                     for xj in problemaCSP.vecinos[xi] 
+    cola = [(xi, xj) for xi in problemaCSP.vecinos[variable]
+                     for xj in problemaCSP.vecinos[xi]
                      if xi not in asignacion]
 
     while len(cola) > 0:
@@ -204,7 +204,7 @@ def min_conflictos(problemaCSP):
     @param problemaCSP: Un problema de satisfacción de restricciones binario
 
     @return: Un diccionario con la asignación correspondiente.
-    """ 
+    """
     #=================================================================
     # 20 puntos: INSERTAR SU CÓDIGO AQUI (minimos conflictos)
     #=================================================================
