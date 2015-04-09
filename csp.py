@@ -18,6 +18,9 @@ En este modulo no es necesario modificar nada.
 __author__ = 'juliowaissman'
 
 
+import random
+
+
 class ProblemaCSP:
     """
     Clase abstracta para hacer un problema CSP en entornos discretos finitos.
@@ -196,8 +199,83 @@ def restaura(problemaCSP, reduccion):
         problemaCSP.dominio[variable] += reduccion[variable]
 
 
+############## MINIMOS CONFLICTOS ##############
 
-def min_conflictos(problemaCSP):
+"""
+Pseudocodigo visto en clase.
+minimos_conflictos(pblesb, max_it)
+1. asig <- Genera una asignacion aleatoria.
+2. conflictos <- numero de restricciones binarias no cumplidas en asig.
+3. para it de 1 a max_it
+4.      si conflictos == 0
+5.          regreso asig
+6.      selecciona una variable con conflictos.
+7.      modifica el valor de la variable en asig con el menor numero de conflictos.
+8.      modifica la variable en asig con el menor numero de conflictos.
+9.      conflictos <- numero de restricciones binarias no cumplidas en asig.
+10. fin para
+11. regresa none
+
+"""
+
+def asignacion_aleatoria(problemaCSP):
+    """
+    Genera una asignacion aleatoria.
+
+    """
+    asig = {}
+
+    for variable in problemaCSP.dominio.keys():
+        valor = random.choice(problemaCSP.dominio[variable])
+        asig[variable] = valor
+    return asig
+
+def num_restricciones_binarias(problemaCSP, asig):
+    """
+    numero de restricciones binarias no cumplidas en asig.
+
+    """
+    conflictos = 0
+    for variable in asig.keys():
+        valor = asig[variable]
+        for vecino in problemaCSP.vecinos[variable]:
+            val_vecino = asig[vecino]
+            if not problemaCSP.restriccion_binaria((variable, valor),(vecino, val_vecino)):
+                conflictos += 1
+    return conflictos
+
+def selecciona_variable_conflictos(problemaCSP, asig):
+    """
+    selecciona una variable con conflictos.
+
+    """
+    variables_conflicto = []
+
+    for variable in asig.keys():
+        valor = asig[variable]
+        for vecino in problemaCSP.vecinos[variable]:
+            val_vecino = asig[vecino]
+            if not problemaCSP.restriccion_binaria((variable, valor),(vecino, val_vecino)):
+                variables_conflicto.append(variable)
+                break;
+    return random.choice(variables_conflicto)
+
+def menor_num_conflictos(problemaCSP, variable, asig):
+    """
+    modifica el valor de la variable en asig con el menor numero de conflictos.
+
+    """
+    def num_conflictos(valor):
+        conflictos = 0
+        for var_vecino in problemaCSP.vecinos[variable]:
+            val_vecino = asig[var_vecino]
+            if not problemaCSP.restriccion_binaria((variable,valor),(var_vecino,val_vecino)):
+                conflictos += 1
+        return conflictos
+
+    return min(problemaCSP.dominio[variable],key=lambda v: num_conflictos(v))
+
+def min_conflictos(problemaCSP, max_it = 100000000):
     """
     Algoritmo de mínimos conflictos
 
@@ -208,3 +286,15 @@ def min_conflictos(problemaCSP):
     #=================================================================
     # 20 puntos: INSERTAR SU CÓDIGO AQUI (minimos conflictos)
     #=================================================================
+
+    asig = asignacion_aleatoria(problemaCSP)
+    conflictos = num_restricciones_binarias(problemaCSP, asig)
+    for it in xrange(max_it):
+        if conflictos == 0:
+            return asig
+        variable = selecciona_variable_conflictos(problemaCSP, asig)
+        valor = menor_num_conflictos(problemaCSP, variable, asig)
+        asig[variable] = valor
+        conflictos = num_restricciones_binarias(problemaCSP, asig)
+        problemaCSP.backtracking += 1
+    return None
