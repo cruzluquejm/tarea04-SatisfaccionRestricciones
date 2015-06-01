@@ -84,6 +84,9 @@ class Sudoku(csp.ProblemaCSP):
 
         for i in xrange(len(pos_ini)):
 
+            #  Muy bien, pero a lo mejor sería mas sencillo
+            #  vecinos[i] = [j for j in range(81) if i != j and (i/9 == j/9 or i%9 == j%9 or 
+            #                                     (i/3 == j/3 and i%3 == j%3))]
             columna = i % 9
             renglon = i // 9
             listacolumna = range(columna, 81, 9)
@@ -122,6 +125,8 @@ class Sudoku(csp.ProblemaCSP):
         otro caso se regresa verdadero.
 
         """
+        # Ok, pero estas restricciones ya las checaste para hacer los vecinos
+        # simplemente retrurn vi != vj
 
         if (vi == vj) and ((xi % 9 == xj % 9) or (xi // 9 == xj // 9) or ((((xi % 9) // 3) == ((xj % 9) // 3)) and (((xi // 9) // 3) == ((xj // 9) // 3)))):
             return False
